@@ -23,6 +23,7 @@ let createUrl = async function (req, res) {
         if (validUrl.isUri(baseUrl)) {
             return res.status(400).send({ status: false, message: "Invalid base URL" })
         }
+
         const urlCode = shortid.generate()
 
         const { longUrl } = requestBody
@@ -30,12 +31,14 @@ let createUrl = async function (req, res) {
         if (!longUrl) { return res.status(400).send({ status: false, message: "LongUrl required" }) }
 
         if (!(/^(http[s]?:\/\/){0,1}(www\.){0,1}[a-zA-Z0-9\.\-]+\.[a-zA-Z]{2,5}[\.]{0,1}/.test(longUrl))) {
-            { return res.status(400).send({ status: false, message: "Invalid LongURL" }) }
+            return res.status(400).send({ status: false, message: "Invalid LongURL" }) 
         }
-
-        let lUrl = await urlModel.findOne({ longUrl })
-        if (lUrl) {
-            return res.status(200).send({ status: true, data: { longUrl: lUrl.longUrl, shortUrl: lUrl.shortUrl, urlCode: lUrl.urlCode } })
+        if (!(/^\S*$/.test(longUrl))) {
+            return res.status(400).send({ status: false, message: "Not a valid LongURL" }) 
+        }
+        let lgUrl = await urlModel.findOne({ longUrl })
+        if (lgUrl) {
+            return res.status(200).send({ status: true, data: { longUrl: lgUrl.longUrl, shortUrl: lgUrl.shortUrl, urlCode: lgUrl.urlCode } })
         }
         const shortUrl = baseUrl + '/' + urlCode
 
@@ -64,10 +67,10 @@ let getOriginalUrl = async function (req, res) {
         if (!urlCode) { return res.status(400).send({ status: false, message: "urlCode Required" }) }
 
         let findUrlCode = await urlModel.findOne({ urlCode })
-        if (!findUrlCode){ return res.status(400).send({ status: false, message: "urlCode not found" }) }
+        if (!findUrlCode) { return res.status(400).send({ status: false, message: "urlCode not found" }) }
 
-    
-        return res.redirect( findUrlCode.longUrl )
+
+        return res.redirect(findUrlCode.longUrl)
     }
     catch (error) {
         res.status(500).send({ status: false, message: error.message })
