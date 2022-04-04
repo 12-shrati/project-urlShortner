@@ -4,7 +4,7 @@ const mongoose = require('mongoose')
 const urlSchema = new mongoose.Schema({
     urlCode: {
         type: String,
-        //required: true,
+        required:true,
         unique: true,
         lowercase: true,
         trim: true
@@ -15,7 +15,7 @@ const urlSchema = new mongoose.Schema({
     },
     shortUrl: {
         type: String,
-        //required: true,
+        required:true,
         unique: true
     }
 
