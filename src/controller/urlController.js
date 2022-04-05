@@ -9,7 +9,7 @@ let isValidRequestBody = function (requestBody) {
 }
 
 
-const baseUrl = ' http://localhost:3000'
+const baseUrl = 'http://localhost:3000'
 
 
 
@@ -20,7 +20,7 @@ let createUrl = async function (req, res) {
             return res.status(400).send({ status: false, message: "Enter valid Parameters" })
         }
 
-        if (validUrl.isUri(baseUrl)) {
+        if (!validUrl.isUri(baseUrl)) {
             return res.status(400).send({ status: false, message: "Invalid base URL" })
         }
 
