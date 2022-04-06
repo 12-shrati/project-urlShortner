@@ -53,7 +53,16 @@ let createUrl = async function (req, res) {
         if (shorturl) {
             return res.status(400).send({ status: false, message: "ShortUrl already exist,Create unique shorturl" })
         }
+<<<<<<< HEAD
 
+=======
+        
+        let urlDatas = await urlModel.findOne({ longUrl:longUrl})
+        if (urlDatas) {
+            return res.status(200).send({ status: true, data: { longUrl: urlDatas.longUrl, shortUrl: urlDatas.shortUrl, urlCode: urlDatas.urlCode } })
+        }
+        
+>>>>>>> feeff273f396c6a48164d150b463baa4b07159ff
         let urlData = {
             longUrl,
             shortUrl,
