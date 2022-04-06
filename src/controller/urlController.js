@@ -9,7 +9,7 @@ let isValidRequestBody = function (requestBody) {
 }
 
 
-const baseUrl = ' http://localhost:3000'
+const baseUrl = 'http://localhost:3000'
 
 
 
@@ -20,7 +20,7 @@ let createUrl = async function (req, res) {
             return res.status(400).send({ status: false, message: "Enter valid Parameters" })
         }
 
-        if (validUrl.isUri(baseUrl)) {
+        if (!validUrl.isUri(baseUrl)) {
             return res.status(400).send({ status: false, message: "Invalid base URL" })
         }
 
@@ -35,7 +35,12 @@ let createUrl = async function (req, res) {
             return res.status(400).send({ status: false, message: "Not a valid LongURL" })
         }
 
-        const urlCode = shortid.generate()
+        let urlDatas = await urlModel.findOne({ longUrl: longUrl })
+        if (urlDatas) {
+            return res.status(200).send({ status: true, data: { longUrl: urlDatas.longUrl, shortUrl: urlDatas.shortUrl, urlCode: urlDatas.urlCode } })
+        }
+
+        const urlCode = shortid.generate().toLowerCase()
 
         let urlcode = await urlModel.findOne({ urlCode: urlCode })
         if (urlcode) {
@@ -43,10 +48,12 @@ let createUrl = async function (req, res) {
         }
 
         const shortUrl = baseUrl + '/' + urlCode
+
         let shorturl = await urlModel.findOne({ shortUrl: shortUrl })
         if (shorturl) {
             return res.status(400).send({ status: false, message: "ShortUrl already exist,Create unique shorturl" })
         }
+
         let urlData = {
             longUrl,
             shortUrl,
@@ -76,7 +83,7 @@ let getOriginalUrl = async function (req, res) {
             return res.status(404).send({ status: false, message: "urlCode not found" })
         }
 
-        return res.status(200).redirect(findUrlCode.longUrl)
+        return res.status(302).redirect(findUrlCode.longUrl)
     }
     catch (error) {
         res.status(500).send({ status: false, message: error.message })
