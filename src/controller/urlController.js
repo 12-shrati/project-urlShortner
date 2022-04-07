@@ -1,5 +1,4 @@
 const urlModel = require("../model/urlModel")
-//const redisController=require('../chaching/cachingController')
 var validUrl = require('valid-url');
 const shortid = require('shortid')
 const redis = require("redis");
@@ -56,9 +55,7 @@ let createUrl = async function (req, res) {
         }
 
         let getShortUrl = await GET_ASYNC(`${longUrl}`)
-        //console.log(getShortUrl)
         let short_url = JSON.parse(getShortUrl)
-        //console.log(short_url)
         if (short_url) {
             return res.status(200).send({ status: true, data: { longUrl: short_url.longUrl, shortUrl: short_url.shortUrl, urlCode: short_url.urlCode } })
         }
@@ -107,7 +104,6 @@ let getOriginalUrl = async function (req, res) {
         let getShortUrl = await GET_ASYNC(`${urlCode}`)
         url = JSON.parse(getShortUrl)
         if(url){
-            console.log(url)
             return res.status(303).redirect(url.longUrl)
             
         } else{
@@ -115,7 +111,7 @@ let getOriginalUrl = async function (req, res) {
 
             if(!findUrlCode) return res.status(400).send({status:false,message:"urlcode is not present "})
             await SET_ASYNC(`${urlCode}`, JSON.stringify(findUrlCode))
-            return res.status(302).redirect(findUrlCode.longUrl)
+            return res.status(307).redirect(findUrlCode.longUrl)
         }
 
     }
